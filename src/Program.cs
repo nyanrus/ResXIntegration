@@ -12,6 +12,7 @@ namespace ResXFoo
     {
         static void Main()
         {
+            //resx統合
             var rsxw = new List<ResXResourceWriter>();
             try
             {
@@ -37,12 +38,14 @@ namespace ResXFoo
 
                 var fnames = HSfileName.ToList<string>();
 
+                var errName = new List<List<string>>();
                 var errKey = new List<List<string>>();
                 var errVal = new List<List<string>>();
 
                 //ファイル名分リスト作成
                 for(int i = 0; i < fnames.Count; ++i)
                 {
+                    errName.Add(new List<string>());
                     errKey.Add(new List<string>());
                     errVal.Add(new List<string>());
                 }
@@ -51,6 +54,8 @@ namespace ResXFoo
                 int tmpa = 0;
                 int tmpb = 0;
                 bool cont = false;
+                Console.WriteLine("--------\n形式\n--------\nValue元ファイル\nValue重複先ファイル\nKey名\n--------");
+
                 //ファイルパス
                 foreach (string name in names)
                 {
@@ -75,8 +80,10 @@ namespace ResXFoo
                                             if (errVal[i][j] != entry.Value.ToString())
                                             {
                                                 ++tmpb;
-                                                Console.WriteLine("Name : " + name);
-                                                Console.WriteLine("Error : " + entry.Key.ToString());
+                                                Console.WriteLine(errName[i][j]);
+                                                Console.WriteLine(name);
+                                                Console.WriteLine(entry.Key.ToString());
+                                                Console.WriteLine("--------");
                                             }
                                             cont = true;
                                             break;
@@ -87,6 +94,7 @@ namespace ResXFoo
                                         cont = false;
                                         continue;
                                     }
+                                    errName[i].Add(name);
                                     errKey[i].Add(entry.Key.ToString());
                                     errVal[i].Add(entry.Value.ToString());
                                     rsxw[i].AddResource(entry.Key.ToString(),entry.Value.ToString());
@@ -122,6 +130,7 @@ namespace ResXFoo
                 }
             }
 
+            //csproj 結合
             var writer = new List<StreamWriter>();
             try
             {
@@ -164,6 +173,13 @@ namespace ResXFoo
             catch(Exception e)
             {
                 Console.WriteLine(e);
+            }
+            finally
+            {
+                foreach(var wr in writer)
+                {
+                    wr.Dispose();
+                }
             }
         }
     }
